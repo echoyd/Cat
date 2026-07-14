@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#FFF0F3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="体态矫正">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23FFB3C1'/%3E%3Ccircle cx='256' cy='180' r='80' fill='%23FDDDE6'/%3E%3Ccircle cx='230' cy='165' r='10' fill='%23E8738A'/%3E%3Ccircle cx='282' cy='165' r='10' fill='%23E8738A'/%3E%3Cpath d='M220 210 Q256 230 292 210' fill='none' stroke='%23E8738A' stroke-width='6' stroke-linecap='round'/%3E%3Ctext x='256' y='380' font-size='140' text-anchor='middle' fill='%23E8738A'%3E🧘%3C/text%3E%3C/svg%3E">
+<title>🌸 体态矫正训练</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FFF5F7;--surface:#FFFFFF;--card:#FFFFFF;--text:#5D4E5F;--text2:#B8A8B8;
+  --pink:#FF6B8A;--pink2:#FF85A2;--pinkL:#FFF0F3;--pinkGlow:rgba(255,107,138,0.12);
+  --mint:#7EC8A0;--mintL:#E8F8EF;--peach:#FFB347;--peachL:#FFF3E2;
+  --lav:#C4A8D0;--lavL:#F8F0FA;--sky:#87CEEB;--skyL:#EEF6FB;
+  --heat0:#F0E6EB;--heat1:#FFD4DE;--heat2:#FF8FAA;--heat3:#FF6B8A;--heat4:#E8557A;
+  --shadow:0 4px 16px rgba(255,107,138,0.10);--shadowH:0 6px 24px rgba(255,107,138,0.16);
+  --radius:20px;--radius2:14px;--radius3:24px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;display:flex;justify-content:center;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;
+  background-image:radial-gradient(circle at 20% 10%,#FFF0F3 0%,transparent 50%),radial-gradient(circle at 80% 90%,#F8F0FA 0%,transparent 50%),radial-gradient(circle at 50% 50%,#EEF6FB 0%,transparent 40%)}
+.app{width:100%;max-width:480px;display:flex;flex-direction:column;min-height:100dvh;position:relative;padding-bottom:75px}
+
+/* Install Banner */
+.install-banner{background:linear-gradient(135deg,var(--pinkL),var(--lavL));padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--pink);font-weight:600;border-radius:0 0 var(--radius2) var(--radius2);cursor:pointer;transition:all .3s;position:relative;z-index:11}
+.install-banner:active{opacity:.8}
+.install-banner .install-icon{font-size:22px;flex-shrink:0}
+.install-banner .install-close{font-size:18px;color:var(--text2);padding:4px 8px;flex-shrink:0}
+.install-banner.hidden{display:none}
+.install-banner.android{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);color:#388E3C}
+
+/* Update Banner */
+.update-banner{background:linear-gradient(135deg,var(--mintL),#D4F0E0);padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:var(--mint);font-weight:600;border-radius:0 0 var(--radius2) var(--radius2);transition:all .3s}
+.update-banner.hidden{display:none}
+.update-banner .update-btn{padding:6px 14px;border:none;border-radius:14px;background:var(--mint);color:#fff;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;outline:none;transition:all .2s}
+.update-banner .update-btn:active{transform:scale(.94)}
+
+/* Settings */
+.settings-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.3);z-index:30;display:none;justify-content:center;align-items:flex-end}
+.settings-overlay.show{display:flex}
+.settings-panel{width:100%;max-width:480px;background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px calc(24px + var(--safe-bottom));max-height:80vh;overflow-y:auto}
+.settings-panel h3{font-size:18px;margin-bottom:4px;text-align:center}
+.settings-panel .settings-desc{font-size:12px;color:var(--text2);text-align:center;margin-bottom:20px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--pinkL)}
+.settings-row .s-label{font-size:14px;font-weight:600}
+.settings-row .s-hint{font-size:11px;color:var(--text2);margin-top:2px}
+.settings-row input[type="time"]{border:1.5px solid var(--pinkL);border-radius:10px;padding:8px 12px;font-size:15px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none}
+.settings-row input[type="time"]:focus{border-color:var(--pink)}
+.toggle-switch{width:48px;height:28px;background:var(--pinkL);border-radius:14px;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0}
+.toggle-switch.on{background:var(--pink)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.toggle-switch.on::after{transform:translateX(20px)}
+.settings-save{width:100%;padding:14px;border:none;border-radius:var(--radius3);font-size:16px;font-weight:700;font-family:var(--font);cursor:pointer;background:var(--pink);color:#fff;margin-top:20px;outline:none;transition:all .2s}
+.settings-save:active{transform:scale(.97)}
+
+/* Header */
+.header{padding:12px 20px 8px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:10;background:rgba(255,245,247,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);gap:0}
+.header-wrap{text-align:center}
+.header h1{font-size:20px;font-weight:700;color:var(--pink);letter-spacing:0.5px}
+.header .subtitle{font-size:11px;color:var(--text2);margin-top:2px}
+.mascot{font-size:32px;display:block;line-height:1;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.settings-icon{position:absolute;right:16px;top:16px;font-size:22px;cursor:pointer;padding:6px;border-radius:50%;transition:transform .2s;z-index:12;background:none;border:none;outline:none;font-family:var(--font)}
+.settings-icon:active{transform:rotate(60deg)}
+
+/* Bottom Nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;background:rgba(255,255,255,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--pinkL);z-index:20;padding:6px 0 var(--safe-bottom);border-radius:20px 20px 0 0;box-shadow:0 -4px 20px rgba(255,107,138,0.06)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0;border:none;background:none;color:var(--text2);font-size:11px;font-family:var(--font);cursor:pointer;transition:all .25s;gap:2px;outline:none;border-radius:12px;margin:0 4px}
+.nav-btn .icon{font-size:22px;line-height:1;transition:transform .25s}
+.nav-btn.active{color:var(--pink)}
+.nav-btn.active .icon{transform:scale(1.15)}
+
+/* Pages */
+.page{display:none;flex:1;padding:0 16px;flex-direction:column;gap:14px}
+.page.active{display:flex}
+
+/* Day Card */
+.day-card{background:var(--card);border-radius:var(--radius);padding:20px 16px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.day-card::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;background:var(--pinkL);border-radius:50%;opacity:.5}
+.day-card::after{content:'';position:absolute;bottom:-10px;left:-10px;width:44px;height:44px;background:var(--lavL);border-radius:50%;opacity:.5}
+.day-card .day-icon{font-size:40px;margin-bottom:4px;position:relative;z-index:2}
+.day-card h2{font-size:17px;margin-bottom:3px;position:relative;z-index:2;color:var(--text)}
+.day-card .day-meta{font-size:12px;color:var(--text2);margin-bottom:8px;position:relative;z-index:2}
+.day-card .day-meta span{margin:0 4px;background:var(--pinkL);padding:3px 10px;border-radius:20px;font-size:11px;color:var(--pink)}
+
+/* Start Button */
+.start-btn{width:100%;padding:18px;border:none;border-radius:var(--radius3);font-size:18px;font-weight:700;font-family:var(--font);cursor:pointer;background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;transition:all .25s;outline:none;box-shadow:0 6px 20px rgba(255,107,138,0.3);position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.start-btn::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,0.2) 50%,transparent 60%);animation:shimmer 2.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.start-btn:active{transform:scale(.96);box-shadow:0 4px 12px rgba(255,107,138,0.2)}
+
+/* Exercise Preview */
+.exercise-preview{display:flex;flex-direction:column;gap:7px}
+.preview-item{display:flex;align-items:center;gap:10px;background:var(--surface);padding:12px 14px;border-radius:var(--radius2);box-shadow:0 1px 6px rgba(0,0,0,0.02);border:1px solid var(--pinkL)}
+.preview-item .preview-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.preview-item .preview-info{flex:1}
+.preview-item .preview-name{font-size:13px;font-weight:600;color:var(--text)}
+.preview-item .preview-detail{font-size:11px;color:var(--text2);margin-top:1px}
+
+/* Week Schedule */
+.week-schedule{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.week-day{flex:1;min-width:38px;text-align:center;padding:8px 2px;border-radius:10px;font-size:10px;background:var(--surface);color:var(--text2);cursor:default;border:1px solid transparent;transition:all .2s}
+.week-day.today{background:var(--pinkL);border-color:var(--pink2);color:var(--pink);font-weight:700}
+.week-day.workout{color:var(--pink);font-weight:600}
+.week-day .day-label{display:block;font-size:10px;margin-bottom:2px}
+.week-day .day-name{display:block;font-size:8px;opacity:.7;line-height:1.1}
+
+/* Workout Header */
+.workout-header{text-align:center;padding:4px 0}
+.workout-header .progress-text{font-size:12px;color:var(--text2);margin-bottom:6px}
+.workout-header .progress-bar{height:5px;background:var(--pinkL);border-radius:3px;overflow:hidden}
+.workout-header .progress-fill{height:100%;background:linear-gradient(90deg,var(--pink2),var(--pink));border-radius:3px;transition:width .4s ease}
+
+/* Exercise Card */
+.exercise-card{background:var(--card);border-radius:var(--radius);padding:18px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:var(--shadow);border:1px solid var(--pinkL)}
+.exercise-card .ex-svg{width:140px;height:140px;margin:0 auto}
+.exercise-card .ex-svg svg{width:100%;height:100%}
+.exercise-card h3{font-size:17px;color:var(--text)}
+.exercise-card .ex-params{font-size:13px;color:var(--pink);font-weight:600}
+.exercise-card .ex-params span{margin:0 3px}
+.exercise-card .ex-desc{font-size:12px;color:var(--text2);max-width:250px;line-height:1.5}
+.exercise-card .ex-tip{font-size:11px;color:var(--peach);background:var(--peachL);padding:7px 14px;border-radius:20px;display:inline-block}
+.video-link{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--pinkL);color:var(--pink);border-radius:22px;font-size:13px;text-decoration:none;font-weight:600;transition:all .2s}
+.video-link:active{background:rgba(255,107,138,0.2);transform:scale(.97)}
+
+/* Set Button */
+.set-btn{width:85%;max-width:280px;padding:16px;border:none;border-radius:28px;font-size:16px;font-weight:700;font-family:var(--font);cursor:pointer;background:linear-gradient(135deg,var(--mint),#5CB88A);color:#fff;transition:all .25s;outline:none;box-shadow:0 4px 16px rgba(126,200,160,0.35)}
+.set-btn:active{transform:scale(.96)}
+.set-btn.resting{background:linear-gradient(135deg,var(--peach),#FFA020);box-shadow:0 4px 16px rgba(255,179,71,0.35)}
+.set-btn:disabled{opacity:.85;cursor:default}
+.rest-timer{font-size:48px;font-weight:800;color:var(--peach);text-align:center;display:none;font-variant-numeric:tabular-nums}
+.rest-timer.show{display:block;animation:pulse2 1s infinite}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.6}}
+.skip-link{font-size:12px;color:var(--text2);background:none;border:none;font-family:var(--font);cursor:pointer;margin-top:0;padding:8px;outline:none;transition:color .2s}
+.skip-link:active{color:var(--pink)}
+
+/* Complete Card */
+.complete-card{background:var(--card);border-radius:var(--radius);padding:24px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:var(--shadow);border:2px solid var(--pinkL)}
+.complete-card .celebration{font-size:56px;animation:bounce .6s ease}
+.complete-card h2{font-size:19px;color:var(--pink)}
+.complete-card .complete-stats{display:flex;gap:28px;margin:4px 0}
+.complete-card .complete-stat{text-align:center}
+.complete-card .complete-stat .val{font-size:28px;font-weight:700;color:var(--mint)}
+.complete-card .complete-stat .lbl{font-size:11px;color:var(--text2)}
+.complete-card .streak-msg{font-size:14px;color:var(--peach);font-weight:600}
+.confetti{position:fixed;pointer-events:none;z-index:50;animation:fall 2s ease-out forwards;font-size:22px}
+@keyframes fall{0%{transform:translateY(-30px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+
+/* Library */
+.category-tabs{display:flex;gap:5px;overflow-x:auto;padding:4px 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.category-tabs::-webkit-scrollbar{display:none}
+.cat-btn{flex-shrink:0;padding:8px 16px;border:1.5px solid var(--pinkL);border-radius:20px;font-size:13px;font-family:var(--font);cursor:pointer;background:var(--surface);color:var(--text2);transition:all .2s;outline:none;white-space:nowrap}
+.cat-btn.active{background:var(--pink);color:#fff;border-color:var(--pink);box-shadow:0 4px 12px rgba(255,107,138,0.25)}
+.lib-grid{display:flex;flex-direction:column;gap:7px}
+.lib-card{background:var(--surface);border-radius:var(--radius2);padding:13px;cursor:pointer;transition:all .2s;box-shadow:0 1px 6px rgba(0,0,0,0.02);border:1px solid transparent}
+.lib-card:active,.lib-card.expanded{box-shadow:var(--shadow);border-color:var(--pinkL)}
+.lib-card .lib-row{display:flex;align-items:center;gap:10px}
+.lib-card .lib-svg{width:44px;height:44px;flex-shrink:0;background:var(--pinkL);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.lib-card .lib-svg svg{width:32px;height:32px}
+.lib-card .lib-info{flex:1;min-width:0}
+.lib-card .lib-name{font-size:14px;font-weight:600}
+.lib-card .lib-brief{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-card .lib-arrow{color:var(--pink2);font-size:15px;flex-shrink:0;transition:transform .25s}
+.lib-card .lib-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--pinkL)}
+.lib-card.expanded .lib-detail{display:block}
+.lib-card.expanded .lib-arrow{transform:rotate(90deg)}
+.lib-detail .detail-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px}
+.lib-detail .detail-row .lbl{color:var(--text2)}
+.lib-detail .detail-steps{font-size:12px;color:var(--text2);line-height:2;margin:8px 0;background:var(--pinkL);padding:10px 12px;border-radius:10px}
+.cat-video-section{margin-bottom:8px;padding:12px;background:linear-gradient(135deg,var(--pinkL),var(--lavL));border-radius:var(--radius2)}
+.cat-video-section .cat-video-title{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.cat-video-section .cat-video-link{display:block;padding:9px 12px;background:var(--surface);border-radius:10px;color:var(--pink);text-decoration:none;font-size:12px;transition:all .2s;font-weight:600}
+.cat-video-section .cat-video-link:active{background:var(--pinkL)}
+
+/* Records */
+.records-stats{display:flex;justify-content:space-around;padding:16px 4px}
+.rec-stat{text-align:center}
+.rec-stat .rec-val{font-size:34px;font-weight:800;color:var(--pink)}
+.rec-stat .rec-lbl{font-size:11px;color:var(--text2);margin-top:2px}
+.heatmap-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 0}
+.heatmap-table{border-collapse:separate;border-spacing:2px;margin:0 auto}
+.heatmap-table th{font-size:9px;color:var(--text2);font-weight:400;text-align:center;padding:0 1px 3px;width:13px}
+.heatmap-table td{width:13px;height:13px}
+.heatmap-cell{width:13px;height:13px;border-radius:3px;background:var(--heat0);transition:background .3s}
+.heatmap-cell.l1{background:var(--heat1)}.heatmap-cell.l2{background:var(--heat2)}.heatmap-cell.l3{background:var(--heat3)}.heatmap-cell.l4{background:var(--heat4)}
+.heatmap-cell.today{outline:2px solid var(--pink);outline-offset:1px;border-radius:4px}
+.history-list{display:flex;flex-direction:column;gap:5px}
+.history-item{display:flex;align-items:center;gap:10px;background:var(--surface);padding:10px 12px;border-radius:var(--radius2);box-shadow:0 1px 4px rgba(0,0,0,0.02);border:1px solid var(--pinkL)}
+.history-item .h-icon{font-size:20px;flex-shrink:0}
+.history-item .h-info{flex:1}.history-item .h-title{font-size:13px;font-weight:600}.history-item .h-meta{font-size:10px;color:var(--text2)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2)}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px}.empty-state p{font-size:14px;line-height:1.8}
+
+/* Toast */
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-140px);background:var(--surface);color:var(--pink);padding:12px 24px;border-radius:24px;font-size:14px;font-weight:600;font-family:var(--font);z-index:100;pointer-events:none;transition:transform .4s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 6px 24px rgba(255,107,138,0.15)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(min-width:500px){
+  .header h1{font-size:23px}
+  .start-btn{font-size:19px}
+  .exercise-card .ex-svg{width:170px;height:170px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Install Banner -->
+  <div class="install-banner hidden" id="installBanner">
+    <span class="install-icon">📲</span>
+    <span id="installText">添加此页到桌面，像APP一样使用</span>
+    <span class="install-close" id="installClose">✕</span>
+  </div>
+
+  <!-- Update Banner -->
+  <div class="update-banner hidden" id="updateBanner">
+    🔄 发现新版本！
+    <button class="update-btn" id="updateBtn">立即更新</button>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-wrap">
+      <div class="mascot" id="mascot">🐰</div>
+      <h1>🌸 体态矫正训练</h1>
+      <div class="subtitle" id="headerSub"></div>
+    </div>
+    <button class="settings-icon" id="settingsBtn" title="设置">⚙️</button>
+  </header>
+
+  <!-- Settings Overlay -->
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-panel">
+      <h3>⚙️ 设置</h3>
+      <p class="settings-desc">设置训练提醒，到点手环会震动哦～</p>
+      <div class="settings-row">
+        <div><div class="s-label">🔔 每日提醒</div><div class="s-hint">到时间手机通知+手环震</div></div>
+        <div class="toggle-switch" id="reminderToggle" onclick="toggleReminder()"></div>
+      </div>
+      <div class="settings-row" style="border:none">
+        <div><div class="s-label">⏰ 提醒时间</div><div class="s-hint">每天这个时间提醒训练</div></div>
+        <input type="time" id="reminderTime" value="19:00">
+      </div>
+      <div style="background:var(--peachL);padding:12px;border-radius:12px;margin:12px 0;font-size:12px;color:var(--peach);line-height:1.6">
+        💡 <b>小米手环联动说明：</b><br>提醒通知会通过蓝牙自动推送到手环，手环会震动并显示消息。请确保手机蓝牙已开启，小米运动健康APP在后台运行。
+      </div>
+      <button class="settings-save" onclick="saveSettings()">💕 保存设置</button>
+    </div>
+  </div>
+
+  <!-- Tab1: Train -->
+  <div class="page active" id="pageTrain">
+    <div id="trainPre">
+      <div class="day-card" id="dayCard"></div>
+      <button class="start-btn" id="startBtn">💕 开始训练</button>
+      <div class="exercise-preview" id="exPreview"></div>
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:-6px">📅 本周计划</div>
+      <div class="week-schedule" id="weekSchedule"></div>
+    </div>
+    <div id="trainActive" style="display:none;flex-direction:column;gap:14px">
+      <div class="workout-header">
+        <div class="progress-text" id="progText"></div>
+        <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+      </div>
+      <div class="exercise-card" id="exCard"></div>
+      <div class="rest-timer" id="restTimer"></div>
+      <button class="set-btn" id="setBtn">完成本组 ✓</button>
+      <button class="skip-link" id="skipBtn">跳过此动作 →</button>
+    </div>
+    <div id="trainDone" style="display:none">
+      <div class="complete-card" id="completeCard"></div>
+      <button class="start-btn" style="margin-top:12px;background:var(--surface);color:var(--text);box-shadow:var(--shadow);border:1px solid var(--pinkL)" id="doneBtn">返回首页</button>
+    </div>
+  </div>
+
+  <!-- Tab2: Library -->
+  <div class="page" id="pageLib">
+    <div class="category-tabs" id="catTabs"></div>
+    <div id="catVideoTop"></div>
+    <div class="lib-grid" id="libGrid"></div>
+  </div>
+
+  <!-- Tab3: Records -->
+  <div class="page" id="pageRec">
+    <div class="records-stats" id="recStats"></div>
+    <div class="heatmap-wrap" id="heatmapWrap"></div>
+    <div style="font-size:14px;font-weight:600;padding:10px 0 2px;color:var(--text)">📝 训练日记</div>
+    <div class="history-list" id="historyList"></div>
+    <div class="empty-state" id="emptyRec" style="display:none">
+      <div class="empty-icon">💕</div><p>还没有训练记录呢<br>快来完成第一次训练吧～<br><span style="font-size:12px;color:var(--pink2)">每天坚持，你会越来越美 ✨</span></p>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="nav">
+    <button class="nav-btn active" data-page="train"><span class="icon">🏠</span>训练</button>
+    <button class="nav-btn" data-page="lib"><span class="icon">📖</span>动作库</button>
+    <button class="nav-btn" data-page="rec"><span class="icon">📊</span>记录</button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// SVG Illustrations
+// ============================================================
+var C = {body:'#FFB3C1',head:'#FDDDE6',line:'#E8738A',accent:'#FF6B8A',tip:'#FFB347',bg:'#FFF5F7'};
+var SVGS = {
+  chin_tuck: `<svg viewBox="0 0 120 160"><circle cx="60" cy="24" r="15" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="22" r="2" fill="${C.line}"/><circle cx="67" cy="22" r="2" fill="${C.line}"/><path d="M54 30 Q60 34 66 30" fill="none" stroke="${C.line}" stroke-width="1.5"/><circle cx="72" cy="20" r="3" fill="#FFB3C1" opacity=".6"/><line x1="60" y1="39" x2="60" y2="65" stroke="${C.body}" stroke-width="5"/><line x1="60" y1="48" x2="38" y2="68" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="48" x2="82" y2="68" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="65" x2="60" y2="110" stroke="${C.body}" stroke-width="4"/><line x1="60" y1="110" x2="44" y2="152" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="110" x2="76" y2="152" stroke="${C.body}" stroke-width="2.5"/><text x="8" y="148" font-size="9" fill="${C.accent}" font-weight="700">← 收</text></svg>`,
+  wall_stand: `<svg viewBox="0 0 120 160"><rect x="112" y="12" width="4" height="138" fill="#E8D5E0" rx="2"/><text x="102" y="80" font-size="8" fill="#C4A8D0">墙</text><circle cx="60" cy="24" r="15" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="22" r="2" fill="${C.line}"/><circle cx="67" cy="22" r="2" fill="${C.line}"/><path d="M54 30 Q60 33 66 30" fill="none" stroke="${C.line}" stroke-width="1.5"/><line x1="60" y1="39" x2="60" y2="65" stroke="${C.body}" stroke-width="5"/><line x1="60" y1="48" x2="38" y2="68" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="48" x2="82" y2="68" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="65" x2="60" y2="110" stroke="${C.body}" stroke-width="5"/><line x1="60" y1="110" x2="45" y2="152" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="110" x2="75" y2="152" stroke="${C.body}" stroke-width="2.5"/></svg>`,
+  neck_stretch: `<svg viewBox="0 0 120 160"><circle cx="60" cy="24" r="15" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="56" cy="22" r="2" fill="${C.line}"/><circle cx="68" cy="22" r="2" fill="${C.line}"/><path d="M54 30 Q60 34 66 30" fill="none" stroke="${C.line}" stroke-width="1.5"/><line x1="60" y1="39" x2="58" y2="65" stroke="${C.body}" stroke-width="5"/><line x1="58" y1="48" x2="36" y2="66" stroke="${C.body}" stroke-width="2.5"/><line x1="62" y1="48" x2="88" y2="32" stroke="${C.body}" stroke-width="2.5"/><text x="72" y="18" font-size="12" fill="${C.tip}">✨</text><line x1="58" y1="65" x2="60" y2="110" stroke="${C.body}" stroke-width="4"/><line x1="60" y1="110" x2="44" y2="152" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="110" x2="76" y2="152" stroke="${C.body}" stroke-width="2.5"/></svg>`,
+  towel_neck: `<svg viewBox="0 0 120 160"><circle cx="60" cy="24" r="15" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="22" r="2" fill="${C.line}"/><circle cx="67" cy="22" r="2" fill="${C.line}"/><path d="M53 30 Q60 34 67 30" fill="none" stroke="${C.line}" stroke-width="1.5"/><rect x="42" y="54" width="36" height="8" rx="4" fill="#FFD4A8" opacity=".8"/><line x1="60" y1="39" x2="60" y2="65" stroke="${C.body}" stroke-width="5"/><line x1="60" y1="48" x2="38" y2="68" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="48" x2="82" y2="68" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="65" x2="60" y2="110" stroke="${C.body}" stroke-width="4"/><line x1="60" y1="110" x2="44" y2="152" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="110" x2="76" y2="152" stroke="${C.body}" stroke-width="2.5"/></svg>`,
+  doorway_stretch: `<svg viewBox="0 0 120 160"><line x1="22" y1="18" x2="22" y2="145" stroke="#E8D5E0" stroke-width="3"/><line x1="100" y1="18" x2="100" y2="145" stroke="#E8D5E0" stroke-width="3"/><text x="6" y="85" font-size="8" fill="#C4A8D0">门框</text><circle cx="60" cy="30" r="15" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="28" r="2" fill="${C.line}"/><circle cx="67" cy="28" r="2" fill="${C.line}"/><path d="M54 36 Q60 39 66 36" fill="none" stroke="${C.line}" stroke-width="1.5"/><line x1="60" y1="45" x2="60" y2="70" stroke="${C.body}" stroke-width="5"/><line x1="50" y1="52" x2="20" y2="50" stroke="${C.body}" stroke-width="2.5"/><line x1="70" y1="52" x2="102" y2="50" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="70" x2="60" y2="115" stroke="${C.body}" stroke-width="4"/><line x1="60" y1="115" x2="45" y2="155" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="115" x2="75" y2="155" stroke="${C.body}" stroke-width="2.5"/></svg>`,
+  wall_angels: `<svg viewBox="0 0 120 160"><rect x="114" y="12" width="3" height="138" fill="#E8D5E0" rx="1"/><circle cx="60" cy="24" r="15" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="22" r="2" fill="${C.line}"/><circle cx="67" cy="22" r="2" fill="${C.line}"/><path d="M54 30 Q60 33 66 30" fill="none" stroke="${C.line}" stroke-width="1.5"/><line x1="60" y1="39" x2="60" y2="65" stroke="${C.body}" stroke-width="5"/><line x1="60" y1="48" x2="32" y2="40" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="48" x2="88" y2="40" stroke="${C.body}" stroke-width="2.5"/><text x="22" y="30" font-size="8" fill="${C.tip}">👼</text><line x1="60" y1="65" x2="60" y2="110" stroke="${C.body}" stroke-width="4"/><line x1="60" y1="110" x2="45" y2="152" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="110" x2="75" y2="152" stroke="${C.body}" stroke-width="2.5"/></svg>`,
+  prone_twy: `<svg viewBox="0 0 120 160"><circle cx="60" cy="32" r="13" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="30" r="1.8" fill="${C.line}"/><circle cx="66" cy="30" r="1.8" fill="${C.line}"/><line x1="60" y1="45" x2="60" y2="65" stroke="${C.body}" stroke-width="3.5"/><line x1="60" y1="50" x2="28" y2="40" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="50" x2="92" y2="40" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="65" x2="60" y2="105" stroke="${C.body}" stroke-width="3"/><line x1="60" y1="105" x2="44" y2="152" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="105" x2="76" y2="152" stroke="${C.body}" stroke-width="2.5"/><text x="8" y="62" font-size="9" fill="${C.tip}" font-weight="700">T</text><text x="8" y="50" font-size="9" fill="${C.accent}" font-weight="700">W</text><text x="8" y="38" font-size="9" fill="#7EC8A0" font-weight="700">Y</text></svg>`,
+  scap_retract: `<svg viewBox="0 0 120 160"><circle cx="60" cy="24" r="15" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="22" r="2" fill="${C.line}"/><circle cx="67" cy="22" r="2" fill="${C.line}"/><path d="M54 30 Q60 33 66 30" fill="none" stroke="${C.line}" stroke-width="1.5"/><line x1="60" y1="39" x2="60" y2="65" stroke="${C.body}" stroke-width="5"/><line x1="60" y1="48" x2="38" y2="60" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="48" x2="82" y2="60" stroke="${C.body}" stroke-width="2.5"/><circle cx="36" cy="60" r="5" fill="none" stroke="${C.accent}" stroke-width="2"/><circle cx="84" cy="60" r="5" fill="none" stroke="${C.accent}" stroke-width="2"/><text x="18" y="52" font-size="7" fill="${C.accent}">←→</text><line x1="60" y1="65" x2="60" y2="110" stroke="${C.body}" stroke-width="4"/><line x1="60" y1="110" x2="45" y2="152" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="110" x2="75" y2="152" stroke="${C.body}" stroke-width="2.5"/></svg>`,
+  glute_bridge: `<svg viewBox="0 0 120 160"><circle cx="60" cy="50" r="13" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="48" r="2" fill="${C.line}"/><circle cx="67" cy="48" r="2" fill="${C.line}"/><line x1="60" y1="63" x2="60" y2="82" stroke="${C.body}" stroke-width="3.5"/><line x1="60" y1="68" x2="38" y2="78" stroke="${C.body}" stroke-width="2"/><line x1="60" y1="68" x2="82" y2="78" stroke="${C.body}" stroke-width="2"/><ellipse cx="60" cy="98" rx="22" ry="11" fill="none" stroke="#7EC8A0" stroke-width="2.5"/><text x="24" y="102" font-size="9" fill="#7EC8A0" font-weight="700">↑桥</text><line x1="30" y1="135" x2="48" y2="155" stroke="${C.body}" stroke-width="2.5"/><line x1="90" y1="135" x2="72" y2="155" stroke="${C.body}" stroke-width="2.5"/></svg>`,
+  clamshell: `<svg viewBox="0 0 120 160"><circle cx="55" cy="28" r="12" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="50" cy="26" r="1.8" fill="${C.line}"/><circle cx="61" cy="26" r="1.8" fill="${C.line}"/><line x1="55" y1="40" x2="55" y2="62" stroke="${C.body}" stroke-width="3.5"/><line x1="55" y1="46" x2="38" y2="56" stroke="${C.body}" stroke-width="2"/><line x1="55" y1="46" x2="74" y2="58" stroke="${C.body}" stroke-width="2"/><line x1="55" y1="62" x2="55" y2="95" stroke="${C.body}" stroke-width="3"/><line x1="50" y1="68" x2="38" y2="92" stroke="${C.body}" stroke-width="2.5"/><line x1="60" y1="68" x2="78" y2="80" stroke="${C.accent}" stroke-width="2.5"/><text x="52" y="118" font-size="8" fill="${C.accent}">↑开</text><line x1="55" y1="95" x2="32" y2="150" stroke="${C.body}" stroke-width="2"/><line x1="55" y1="95" x2="78" y2="150" stroke="${C.body}" stroke-width="2"/></svg>`,
+  bird_dog: `<svg viewBox="0 0 120 160"><circle cx="60" cy="42" r="12" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="56" cy="40" r="1.8" fill="${C.line}"/><circle cx="66" cy="40" r="1.8" fill="${C.line}"/><line x1="60" y1="54" x2="60" y2="74" stroke="${C.body}" stroke-width="3.5"/><line x1="60" y1="60" x2="36" y2="52" stroke="${C.body}" stroke-width="2"/><line x1="60" y1="60" x2="84" y2="52" stroke="${C.body}" stroke-width="2"/><line x1="60" y1="74" x2="44" y2="108" stroke="${C.body}" stroke-width="3.5"/><line x1="60" y1="74" x2="76" y2="108" stroke="${C.body}" stroke-width="3.5"/><text x="6" y="46" font-size="8" fill="${C.tip}">🐦</text><line x1="40" y1="112" x2="30" y2="148" stroke="${C.body}" stroke-width="2"/><line x1="80" y1="112" x2="90" y2="148" stroke="${C.body}" stroke-width="2"/></svg>`,
+  dead_bug: `<svg viewBox="0 0 120 160"><circle cx="60" cy="32" r="13" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="55" cy="30" r="2" fill="${C.line}"/><circle cx="67" cy="30" r="2" fill="${C.line}"/><path d="M53 38 Q60 42 67 38" fill="none" stroke="${C.line}" stroke-width="1.5" transform="rotate(180,60,40)"/><line x1="60" y1="45" x2="60" y2="65" stroke="${C.body}" stroke-width="3.5"/><line x1="60" y1="52" x2="34" y2="42" stroke="${C.body}" stroke-width="2"/><line x1="60" y1="52" x2="86" y2="42" stroke="${C.body}" stroke-width="2"/><line x1="60" y1="65" x2="60" y2="85" stroke="${C.body}" stroke-width="3"/><line x1="54" y1="90" x2="38" y2="128" stroke="${C.body}" stroke-width="2.5"/><line x1="66" y1="90" x2="82" y2="128" stroke="${C.body}" stroke-width="2.5"/><text x="20" y="118" font-size="8" fill="#7EC8A0">↓交替</text></svg>`,
+  cat_cow: `<svg viewBox="0 0 120 160"><circle cx="60" cy="38" r="12" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="56" cy="36" r="1.8" fill="${C.line}"/><circle cx="66" cy="36" r="1.8" fill="${C.line}"/><line x1="60" y1="50" x2="60" y2="72" stroke="${C.body}" stroke-width="3.5"/><line x1="60" y1="56" x2="38" y2="48" stroke="${C.body}" stroke-width="2"/><line x1="60" y1="56" x2="82" y2="48" stroke="${C.body}" stroke-width="2"/><line x1="60" y1="72" x2="46" y2="104" stroke="${C.body}" stroke-width="3.5"/><line x1="60" y1="72" x2="74" y2="104" stroke="${C.body}" stroke-width="3.5"/><text x="30" y="32" font-size="9" fill="${C.tip}">🐱</text><line x1="36" y1="108" x2="26" y2="148" stroke="${C.body}" stroke-width="2"/><line x1="74" y1="108" x2="84" y2="148" stroke="${C.body}" stroke-width="2"/></svg>`,
+  child_pose: `<svg viewBox="0 0 120 160"><circle cx="60" cy="58" r="12" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="56" cy="56" r="1.5" fill="${C.line}"/><circle cx="66" cy="56" r="1.5" fill="${C.line}"/><path d="M56 62 Q60 64 64 62" fill="none" stroke="${C.line}" stroke-width="1.2"/><line x1="60" y1="70" x2="56" y2="86" stroke="${C.body}" stroke-width="3.5"/><line x1="58" y1="78" x2="38" y2="72" stroke="${C.body}" stroke-width="2"/><line x1="58" y1="78" x2="82" y2="72" stroke="${C.body}" stroke-width="2"/><line x1="56" y1="86" x2="48" y2="116" stroke="${C.body}" stroke-width="3"/><line x1="56" y1="86" x2="64" y2="116" stroke="${C.body}" stroke-width="3"/><text x="36" y="138" font-size="9" fill="#7EC8A0">💤放松~</text><line x1="48" y1="116" x2="40" y2="148" stroke="${C.body}" stroke-width="2"/><line x1="64" y1="116" x2="72" y2="148" stroke="${C.body}" stroke-width="2"/></svg>`,
+  hip_flexor: `<svg viewBox="0 0 120 160"><circle cx="56" cy="24" r="13" fill="${C.head}" stroke="${C.line}" stroke-width="2"/><circle cx="51" cy="22" r="2" fill="${C.line}"/><circle cx="63" cy="22" r="2" fill="${C.line}"/><path d="M50 30 Q56 33 62 30" fill="none" stroke="${C.line}" stroke-width="1.5"/><line x1="56" y1="37" x2="56" y2="60" stroke="${C.body}" stroke-width="3.5"/><line x1="56" y1="45" x2="36" y2="55" stroke="${C.body}" stroke-width="2"/><line x1="56" y1="45" x2="76" y2="55" stroke="${C.body}" stroke-width="2"/><line x1="56" y1="60" x2="56" y2="90" stroke="${C.body}" stroke-width="3"/><line x1="50" y1="76" x2="28" y2="108" stroke="${C.body}" stroke-width="2.5"/><line x1="56" y1="90" x2="50" y2="138" stroke="${C.body}" stroke-width="2.5"/><line x1="56" y1="90" x2="78" y2="106" stroke="${C.body}" stroke-width="2"/><text x="10" y="60" font-size="7" fill="${C.accent}">拉伸</text><line x1="50" y1="138" x2="40" y2="158" stroke="${C.body}" stroke-width="1.5"/></svg>`
+};
+
+// ============================================================
+// Exercise Data
+// ============================================================
+var EXERCISES = [
+  {id:'chin_tuck',cat:'cervical',name:'收下巴',sets:3,reps:'15次',rest:30,desc:'纠正脖子前倾的基础动作，恢复颈椎正常曲度',tip:'后脑勺向后平移，想象头顶有根线向上拉 💫',steps:'1. 坐直或站直，目视前方\n2. 下巴水平向后收，像做双下巴\n3. 保持3秒，慢慢放松\n4. 重复15次',video:'BV1by411z7jg',svg:SVGS.chin_tuck},
+  {id:'wall_stand',cat:'cervical',name:'靠墙站立',sets:2,reps:'3分钟',rest:60,desc:'全身姿态重建，找到身体正确排列',tip:'脚后跟、臀部、肩胛骨、后脑勺四点贴墙 🧱',steps:'1. 背对墙壁站立，脚后跟离墙5-10cm\n2. 臀部、上背、后脑勺贴墙\n3. 收紧腹部，下巴微收\n4. 保持3分钟，正常呼吸',video:'BV1by411z7jg',svg:SVGS.wall_stand},
+  {id:'neck_stretch',cat:'cervical',name:'颈部侧拉伸',sets:2,reps:'30秒/侧',rest:15,desc:'缓解颈部肌肉紧张，改善左右不平衡',tip:'拉伸侧的手可轻压头部增加幅度，不要太用力哦 🌸',steps:'1. 坐直，右手轻轻放在头顶左侧\n2. 缓慢将头向右倾斜\n3. 感到左侧颈部拉伸感时保持30秒\n4. 换另一侧重复',video:'BV1by411z7jg',svg:SVGS.neck_stretch},
+  {id:'towel_neck',cat:'cervical',name:'毛巾抗阻',sets:3,reps:'10次',rest:30,desc:'强化颈后深层肌肉，帮助恢复颈椎生理曲度',tip:'力量要轻，重点是激活深层肌肉 🎀',steps:'1. 毛巾放在后脑勺，双手向前拉\n2. 头部向后轻轻抵抗毛巾拉力\n3. 保持5秒，放松\n4. 重复10次',video:'BV1by411z7jg',svg:SVGS.towel_neck},
+  {id:'doorway_stretch',cat:'shoulder',name:'门框胸肌拉伸',sets:2,reps:'30秒/侧',rest:15,desc:'打开紧缩的胸肌，改善圆肩内扣',tip:'手臂与肩同高，身体前移直到感觉胸肌轻轻拉伸 🚪',steps:'1. 站在门框处，手臂弯曲90°放门框上\n2. 身体缓慢前移，感觉胸部拉伸\n3. 保持30秒，换另一侧\n4. 每天可多做几组',video:'BV11YRhBYECz',svg:SVGS.doorway_stretch},
+  {id:'wall_angels',cat:'shoulder',name:'靠墙天使',sets:3,reps:'12次',rest:30,desc:'改善肩胛骨控制能力，纠正圆肩驼背',tip:'全程保持手腕、手肘贴墙，像天使挥动翅膀 👼',steps:'1. 背靠墙站立，手臂呈"W"形贴墙\n2. 缓慢将手臂向上滑动呈"Y"形\n3. 再缓慢回到"W"形\n4. 全程保持手臂贴墙，重复12次',video:'BV11YRhBYECz',svg:SVGS.wall_angels},
+  {id:'prone_twy',cat:'shoulder',name:'俯身T/W/Y',sets:3,reps:'10次/字母',rest:30,desc:'强化上背部肌群，对抗圆肩',tip:'下巴微收，用背部发力，感受肩胛骨之间的挤压 ⚡',steps:'1. 俯卧或站立前倾，手臂自然下垂\n2. T: 手臂侧平举，拇指朝上\n3. W: 手肘弯曲下拉，呈W形\n4. Y: 手臂斜上方举起，呈Y形\n5. 每个字母做10次',video:'BV11YRhBYECz',svg:SVGS.prone_twy},
+  {id:'scap_retract',cat:'shoulder',name:'肩胛后缩',sets:3,reps:'15次',rest:20,desc:'激活肩胛骨中间肌肉，让肩膀回到正确位置',tip:'想象肩胛骨中间夹着一支笔，不要耸肩 ✏️',steps:'1. 坐直或站直，手臂自然垂放\n2. 肩胛骨向中间靠拢\n3. 保持3秒，放松\n4. 重复15次',video:'BV11YRhBYECz',svg:SVGS.scap_retract},
+  {id:'glute_bridge',cat:'pelvis',name:'臀桥',sets:3,reps:'15次',rest:30,desc:'激活臀大肌，稳定骨盆，纠正骨盆不对称',tip:'顶峰时臀部夹紧，腹部收紧，身体呈一条直线 🍑',steps:'1. 仰卧，双膝弯曲，双脚平放与髋同宽\n2. 臀部发力向上抬起，直到身体呈直线\n3. 顶峰保持2秒，缓慢放下\n4. 重复15次',video:'BV1QvCxBiEty',svg:SVGS.glute_bridge},
+  {id:'clamshell',cat:'pelvis',name:'蚌式开合',sets:3,reps:'15次/侧',rest:30,desc:'强化臀中肌，改善骨盆高低不对称和长短腿',tip:'上半身保持不动，只有膝盖在打开，像小贝壳 🐚',steps:'1. 侧卧，双膝弯曲约45°，双脚并拢\n2. 上侧膝盖缓慢向上打开\n3. 骨盆不要后倾，保持身体稳定\n4. 顶峰保持2秒，缓慢放下\n5. 每侧15次',video:'BV1QvCxBiEty',svg:SVGS.clamshell},
+  {id:'bird_dog',cat:'core',name:'鸟狗式',sets:3,reps:'10次/侧',rest:30,desc:'训练核心稳定性和脊柱中立位，改善骨盆控制',tip:'保持背部平坦，不要让腰部塌陷 🐦',steps:'1. 四足跪姿，手腕在肩下方，膝盖在髋下方\n2. 同时抬起右臂和左腿，与身体平行\n3. 保持3秒，缓慢收回\n4. 换左臂右腿，交替进行\n5. 每侧10次',video:'BV1QvCxBiEty',svg:SVGS.bird_dog},
+  {id:'dead_bug',cat:'core',name:'死虫式',sets:3,reps:'12次/侧',rest:30,desc:'核心抗伸展训练，帮助骨盆维持正位',tip:'腰部始终贴地，不要留空隙 🐛',steps:'1. 仰卧，手臂上举，膝盖弯曲90°\n2. 缓慢放下右臂和左腿，靠近地面但不接触\n3. 回到起始位置\n4. 换左臂右腿，交替进行\n5. 每侧12次',video:'BV1QvCxBiEty',svg:SVGS.dead_bug},
+  {id:'cat_cow',cat:'stretch',name:'猫牛式',sets:2,reps:'10次',rest:15,desc:'增加脊柱灵活性，缓解背部僵硬',tip:'配合呼吸：吸气塌腰抬头，呼气拱背低头 🐱',steps:'1. 四足跪姿，手腕在肩下方，膝盖在髋下方\n2. 吸气：腰部下沉，抬头挺胸（牛式）\n3. 呼气：背部拱起，下巴收紧（猫式）\n4. 配合呼吸，缓慢流动10次',video:'BV1SczYBuEni',svg:SVGS.cat_cow},
+  {id:'child_pose',cat:'stretch',name:'婴儿式',sets:2,reps:'1分钟',rest:0,desc:'全身放松，缓解训练后的肌肉紧张',tip:'额头贴地，臀部坐向脚跟，深呼吸放松 💤',steps:'1. 跪姿，臀部坐在脚跟上\n2. 身体前倾，额头贴地\n3. 手臂向前伸展或放身体两侧\n4. 保持1分钟，深呼吸',video:'BV1SczYBuEni',svg:SVGS.child_pose},
+  {id:'hip_flexor',cat:'stretch',name:'髋屈肌拉伸',sets:2,reps:'30秒/侧',rest:15,desc:'拉伸紧张的髋屈肌，改善骨盆前倾和长短腿',tip:'后侧腿的臀部向前推，感觉大腿前侧根部拉伸 🌷',steps:'1. 单膝跪地，前腿膝盖弯曲90°\n2. 臀部向前推，身体保持直立\n3. 感觉到后腿髋部前侧拉伸\n4. 保持30秒，换另一侧',video:'BV1QvCxBiEty',svg:SVGS.hip_flexor}
+];
+var CATS = [
+  {id:'cervical',name:'颈椎',icon:'🧣',videoTitle:'头前伸/富贵包/颈椎曲度变直 跟练版',videoUrl:'https://m.bilibili.com/video/BV1by411z7jg'},
+  {id:'shoulder',name:'肩部',icon:'💪',videoTitle:'Austin Goh 圆肩+头前伸+高低肩 跟练',videoUrl:'https://m.bilibili.com/video/BV11YRhBYECz'},
+  {id:'pelvis',name:'骨盆',icon:'🦴',videoTitle:'激活臀中肌 调整长短腿 骨盆正位',videoUrl:'https://m.bilibili.com/video/BV1QvCxBiEty'},
+  {id:'core',name:'核心',icon:'🎯',videoTitle:'骨盆核心训练合集',videoUrl:'https://m.bilibili.com/video/BV1QvCxBiEty'},
+  {id:'stretch',name:'拉伸',icon:'🧘',videoTitle:'欧阳春晓 全身体态纠正',videoUrl:'https://m.bilibili.com/video/BV1SczYBuEni'}
+];
+var WORKOUTS = {
+  1:{name:'颈椎+肩部矫正',icon:'🧣',dur:28,exIds:['chin_tuck','wall_angels','doorway_stretch','prone_twy','scap_retract']},
+  3:{name:'骨盆+核心稳定',icon:'🦴',dur:28,exIds:['glute_bridge','clamshell','bird_dog','dead_bug','cat_cow']},
+  5:{name:'全身综合训练',icon:'💪',dur:28,exIds:['chin_tuck','wall_angels','glute_bridge','bird_dog','hip_flexor']},
+  0:{name:'拉伸放松日',icon:'🧘',dur:18,exIds:['neck_stretch','cat_cow','child_pose','hip_flexor']},
+  2:{name:'拉伸放松日',icon:'🧘',dur:18,exIds:['neck_stretch','cat_cow','child_pose','hip_flexor']},
+  4:{name:'拉伸放松日',icon:'🧘',dur:18,exIds:['neck_stretch','cat_cow','child_pose','hip_flexor']},
+  6:{name:'拉伸放松日',icon:'🧘',dur:18,exIds:['neck_stretch','cat_cow','child_pose','hip_flexor']}
+};
+var DAY_LABELS = ['日','一','二','三','四','五','六'];
+var WEEK_DAYS = [{dow:0,label:'日',workout:'拉伸放松'},{dow:1,label:'一',workout:'颈椎肩部',main:true},{dow:2,label:'二',workout:'拉伸放松'},{dow:3,label:'三',workout:'骨盆核心',main:true},{dow:4,label:'四',workout:'拉伸放松'},{dow:5,label:'五',workout:'全身综合',main:true},{dow:6,label:'六',workout:'拉伸放松'}];
+var MASCOTS = ['🐰','🐱','🦊','🐼','🐨','🐣','🦄','🐹'];
+
+// ============================================================
+// Data Layer
+// ============================================================
+var STORAGE_KEY = 'posture_training_data';
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addDays(s,n){var d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function daysBetween(a,b){return Math.round(Math.abs((new Date(a+'T00:00:00')-new Date(b+'T00:00:00'))/86400000))}
+function dayOfWeek(s){return new Date(s+'T00:00:00').getDay()}
+function loadData(){try{var raw=localStorage.getItem(STORAGE_KEY);if(!raw)return{version:2,records:[],createdAt:todayStr()};var d=JSON.parse(raw);return{version:2,records:d.records||[],createdAt:d.createdAt||todayStr()}}catch(e){return{version:2,records:[],createdAt:todayStr()}}}
+function saveData(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}catch(e){showToast('存储已满 💦')}}
+function getRecordDates(){return new Set(loadData().records.map(function(r){return r.date}))}
+function getStreak(){var dates=[],seen=new Set();loadData().records.forEach(function(r){if(!seen.has(r.date)){dates.push(r.date);seen.add(r.date)}});dates.sort().reverse();if(!dates.length)return 0;var today=todayStr();var newest=dates[0];if(daysBetween(newest,today)>1)return 0;var s=0,cur=newest,set=new Set(dates);while(set.has(cur)){s++;cur=addDays(cur,-1)}return s}
+
+// ============================================================
+// Training Engine
+// ============================================================
+var trainState=null;
+function startTraining(){
+  var dow=dayOfWeek(todayStr()),w=WORKOUTS[dow],exs=w.exIds.map(function(id){return EXERCISES.find(function(e){return e.id===id})}).filter(Boolean);
+  trainState={workout:w,exercises:exs,exIndex:0,setIndex:0,phase:'active',timerId:null,restSec:0,startTime:Date.now()};
+  showTrainActive();
+}
+function stopTimer(){if(trainState&&trainState.timerId){clearInterval(trainState.timerId);trainState.timerId=null}}
+function completeSet(){
+  if(!trainState||trainState.phase==='done')return;
+  var ex=trainState.exercises[trainState.exIndex];trainState.setIndex++;
+  if(trainState.setIndex>=ex.sets){trainState.setIndex=0;
+    if(trainState.exIndex+1>=trainState.exercises.length){stopTimer();trainState.phase='done';saveRecord();showTrainDone();return}
+    trainState.exIndex++;trainState.phase='rest';trainState.restSec=60;renderActiveEx();startRestTimer();}
+  else{trainState.phase='rest';trainState.restSec=ex.rest;renderActiveEx();startRestTimer()}
+}
+function startRestTimer(){stopTimer();
+  var el=document.getElementById('restTimer');el.classList.add('show');
+  var btn=document.getElementById('setBtn');btn.classList.add('resting');btn.textContent='休息中...';btn.disabled=true;
+  trainState.timerId=setInterval(function(){
+    trainState.restSec--;el.textContent='00:'+String(trainState.restSec).padStart(2,'0');
+    if(trainState.restSec<=0){stopTimer();el.classList.remove('show');trainState.phase='active';
+      var b=document.getElementById('setBtn');b.classList.remove('resting');b.disabled=false;b.textContent='完成本组 ✓';
+      if(trainState.setIndex===0)renderActiveEx()}
+  },1000);
+}
+function saveRecord(){var dur=Math.round((Date.now()-trainState.startTime)/60000);var data=loadData();
+  data.records.push({date:todayStr(),workout:trainState.workout.name,exercisesDone:trainState.exercises.length,duration:dur});saveData(data)}
+
+// ============================================================
+// Render: Training
+// ============================================================
+function showTrainPre(){
+  document.getElementById('trainPre').style.display='block';document.getElementById('trainActive').style.display='none';document.getElementById('trainDone').style.display='none';
+  var today=todayStr();document.getElementById('headerSub').textContent=today+' · 今天也要加油哦 💕';updateMascot();
+  var dow=dayOfWeek(today),w=WORKOUTS[dow],exs=w.exIds.map(function(id){return EXERCISES.find(function(e){return e.id===id})}).filter(Boolean);
+  document.getElementById('dayCard').innerHTML='<div class="day-icon">'+w.icon+'</div><h2>'+DAY_LABELS[dow]+'曜日 · '+w.name+'</h2><div class="day-meta"><span>⏱ ~'+w.dur+'分钟</span><span>📋 '+exs.length+'个动作</span></div>';
+  var html='';exs.forEach(function(ex,i){html+='<div class="preview-item"><div class="preview-num">'+(i+1)+'</div><div class="preview-info"><div class="preview-name">'+ex.name+'</div><div class="preview-detail">'+ex.sets+'组 × '+ex.reps+'</div></div></div>'});
+  document.getElementById('exPreview').innerHTML=html;
+  html='';WEEK_DAYS.forEach(function(d){var cls=['week-day'];if(d.dow===dow)cls.push('today');if(d.main)cls.push('workout');
+    html+='<div class="'+cls.join(' ')+'"><span class="day-label">'+d.label+'</span><span class="day-name">'+d.workout+'</span></div>'});
+  document.getElementById('weekSchedule').innerHTML=html;
+}
+function showTrainActive(){
+  document.getElementById('trainPre').style.display='none';document.getElementById('trainActive').style.display='flex';document.getElementById('trainDone').style.display='none';
+  document.getElementById('headerSub').textContent='训练中 · 加油加油！💪';document.getElementById('restTimer').classList.remove('show');
+  var btn=document.getElementById('setBtn');btn.classList.remove('resting');btn.disabled=false;btn.textContent='完成本组 ✓';
+  document.getElementById('mascot').textContent='🐰';document.getElementById('mascot').style.animation='none';renderActiveEx();
+}
+function renderActiveEx(){
+  if(!trainState)return;var ex=trainState.exercises[trainState.exIndex],total=ex.sets,cur=trainState.setIndex+1;
+  document.getElementById('progText').textContent='动作 '+(trainState.exIndex+1)+'/'+trainState.exercises.length+' · 第 '+cur+'/'+total+' 组';
+  var totalSets=trainState.exercises.reduce(function(s,e){return s+e.sets},0);
+  var doneSets=trainState.exIndex===0?trainState.setIndex:trainState.exercises.slice(0,trainState.exIndex).reduce(function(s,e){return s+e.sets},0)+trainState.setIndex;
+  document.getElementById('progFill').style.width=Math.round((doneSets/totalSets)*100)+'%';
+  document.getElementById('exCard').innerHTML='<div class="ex-svg">'+ex.svg+'</div><h3>'+ex.name+'</h3><div class="ex-params"><span>'+ex.sets+'组</span>·<span>'+ex.reps+'</span>·<span>休息'+ex.rest+'s</span></div><div class="ex-desc">'+ex.desc+'</div><div class="ex-tip">💡 '+ex.tip+'</div><a class="video-link" href="https://m.bilibili.com/video/'+ex.video+'" target="_blank" rel="noopener">🎬 看视频教学</a>';
+}
+function showTrainDone(){
+  stopTimer();document.getElementById('trainPre').style.display='none';document.getElementById('trainActive').style.display='none';document.getElementById('trainDone').style.display='block';
+  document.getElementById('headerSub').textContent='训练完成 · 你真棒！🎉';document.getElementById('mascot').textContent='🦄';document.getElementById('mascot').style.animation='bounce 1s infinite';
+  var data=loadData(),last=data.records[data.records.length-1],streak=getStreak();
+  document.getElementById('completeCard').innerHTML='<div class="celebration">🎀</div><h2>训练完成！你好棒！</h2><div class="complete-stats"><div class="complete-stat"><div class="val">'+last.exercisesDone+'</div><div class="lbl">完成动作</div></div><div class="complete-stat"><div class="val">'+last.duration+'min</div><div class="lbl">训练时长</div></div></div><div class="streak-msg">🔥 连续训练 <b>'+streak+'</b> 天</div>'+(streak>=7?'<div style="font-size:13px;color:var(--pink2);margin-top:4px">坚持就是最美的魔法 ✨</div>':'');
+  spawnConfetti();notifyComplete(streak);
+}
+function spawnConfetti(){var emojis=['🌸','💕','✨','🎀','💖','🌟','🦋','🌷'];for(var i=0;i<20;i++){setTimeout(function(){var el=document.createElement('span');el.className='confetti';el.textContent=emojis[Math.floor(Math.random()*emojis.length)];el.style.left=Math.random()*100+'%';el.style.animationDuration=(1.5+Math.random()*2)+'s';el.style.fontSize=(16+Math.random()*20)+'px';document.body.appendChild(el);setTimeout(function(){el.remove()},3500)},i*80)}}
+function updateMascot(){var data=loadData(),today=todayStr(),checked=data.records.some(function(r){return r.date===today});var idx=new Date().getDate()%MASCOTS.length;document.getElementById('mascot').textContent=checked?MASCOTS[(idx+5)%MASCOTS.length]:MASCOTS[idx];document.getElementById('mascot').style.animation='bounce 2s infinite'}
+
+// ============================================================
+// Library
+// ============================================================
+var libCat='cervical';
+function renderLibCatTabs(){var html='';CATS.forEach(function(c){html+='<button class="cat-btn'+(libCat===c.id?' active':'')+'" data-cat="'+c.id+'">'+c.icon+' '+c.name+'</button>'});document.getElementById('catTabs').innerHTML=html}
+function renderLib(){
+  var cat=CATS.find(function(c){return c.id===libCat});document.getElementById('catVideoTop').innerHTML=cat?'<div class="cat-video-section"><div class="cat-video-title">🎬 '+cat.name+'部推荐跟练视频</div><a class="cat-video-link" href="'+cat.videoUrl+'" target="_blank" rel="noopener">'+cat.videoTitle+' →</a></div>':'';
+  var exs=EXERCISES.filter(function(e){return e.cat===libCat}),html='';exs.forEach(function(e){html+='<div class="lib-card" data-id="'+e.id+'" onclick="toggleLibCard(this)"><div class="lib-row"><div class="lib-svg">'+e.svg.replace(/viewBox="0 0 120 160"/,'viewBox="0 0 120 160" width="34" height="34"')+'</div><div class="lib-info"><div class="lib-name">'+e.name+'</div><div class="lib-brief">'+e.desc+'</div></div><div class="lib-arrow">▶</div></div><div class="lib-detail"><div class="detail-row"><span class="lbl">组数</span><span>'+e.sets+'组</span></div><div class="detail-row"><span class="lbl">每组</span><span>'+e.reps+'</span></div><div class="detail-row"><span class="lbl">休息</span><span>'+e.rest+'秒</span></div><div class="detail-steps">'+e.steps.replace(/\n/g,'<br>')+'</div><a class="video-link" href="https://m.bilibili.com/video/'+e.video+'" target="_blank" rel="noopener">🎬 观看视频教程</a></div></div>'});
+  document.getElementById('libGrid').innerHTML=html;
+}
+function toggleLibCard(el){el.classList.toggle('expanded')}
+
+// ============================================================
+// Records
+// ============================================================
+function renderRecords(){
+  var data=loadData(),records=data.records,dates=getRecordDates(),streak=getStreak();
+  var now=new Date(),thisMonth=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'),monthCount=records.filter(function(r){return r.date.startsWith(thisMonth)}).length;
+  document.getElementById('recStats').innerHTML='<div class="rec-stat"><div class="rec-val">'+streak+'</div><div class="rec-lbl">🔥 连续天数</div></div><div class="rec-stat"><div class="rec-val">'+monthCount+'</div><div class="rec-lbl">📅 本月训练</div></div><div class="rec-stat"><div class="rec-val">'+records.length+'</div><div class="rec-lbl">💕 总次数</div></div>';
+  var today=todayStr(),startDate=addDays(today,-90),cells=[];
+  for(var i=0;i<91;i++){var d=addDays(startDate,i);cells.push({date:d,checked:dates.has(d),isToday:d===today})}
+  var weeks=[],curWeek=Array(7).fill(null);
+  cells.forEach(function(c){var dow=dayOfWeek(c.date);curWeek[dow]=c;if(dow===6){weeks.push(curWeek);curWeek=Array(7).fill(null)}});
+  if(curWeek.some(function(c){return c!==null}))weeks.push(curWeek);
+  var htm='<table class="heatmap-table"><thead><tr><th></th>';for(var i2=0;i2<weeks.length;i2++)htm+='<th></th>';htm+='</tr></thead><tbody>';
+  var dayLabels=['日','一','二','三','四','五','六'];
+  for(var row=0;row<7;row++){htm+='<tr>';htm+='<td style="font-size:9px;color:var(--text2);text-align:right;padding-right:4px;width:18px">'+(row%2===0?dayLabels[row]:'')+'</td>';
+    for(var col=0;col<weeks.length;col++){var cell=weeks[col][row],cls='heatmap-cell';if(cell&&cell.checked)cls+=' l4';if(!cell){htm+='<td></td>';continue}if(cell&&cell.isToday)cls+=' today';htm+='<td><div class="'+cls+'" title="'+(cell?cell.date:'')+'"></div></td>'}htm+='</tr>'}
+  htm+='</tbody></table>';document.getElementById('heatmapWrap').innerHTML=htm;
+  if(records.length===0){document.getElementById('historyList').innerHTML='';document.getElementById('emptyRec').style.display='block'}else{
+    document.getElementById('emptyRec').style.display='none';var hist='';
+    records.slice().reverse().forEach(function(r){var d2=new Date(r.date+'T00:00:00');hist+='<div class="history-item"><div class="h-icon">🌸</div><div class="h-info"><div class="h-title">'+r.workout+'</div><div class="h-meta">'+r.date+' 周'+DAY_LABELS[d2.getDay()]+' · '+r.exercisesDone+'个动作 · '+r.duration+'分钟</div></div></div>'});
+    document.getElementById('historyList').innerHTML=hist;
+  }
+}
+
+// ============================================================
+// Notification & Reminder
+// ============================================================
+var reminderTimer=null;
+function requestNotificationPermission(){
+  if('Notification' in window && Notification.permission==='default'){Notification.requestPermission()}
+}
+function sendNotification(title,body){
+  if('Notification' in window && Notification.permission==='granted'){
+    try{new Notification(title,{body:body,icon:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#FFB3C1"/><text x="32" y="44" font-size="36" text-anchor="middle">🧘</text></svg>'),tag:'posture-reminder',vibrate:[200,100,200],requireInteraction:false,silent:false})}catch(e){}
+  }
+}
+function notifyComplete(streak){var msgs=['训练完成！你好棒！🎉','又是坚持的一天，为你骄傲 💕','每天都更接近完美体态 ✨'];sendNotification('🌸 体态矫正',msgs[Math.floor(Math.random()*msgs.length)]+'\n连续训练 '+streak+' 天')}
+
+function loadReminderSettings(){
+  try{var raw=localStorage.getItem('posture_reminder');if(!raw)return{enabled:false,time:'19:00'};return JSON.parse(raw)}catch(e){return{enabled:false,time:'19:00'}}
+}
+function saveReminderSettings(s){try{localStorage.setItem('posture_reminder',JSON.stringify(s))}catch(e){}}
+function applyReminderUI(){
+  var s=loadReminderSettings();
+  document.getElementById('reminderToggle').classList.toggle('on',s.enabled);
+  document.getElementById('reminderTime').value=s.time;
+}
+function toggleReminder(){var s=loadReminderSettings();s.enabled=!s.enabled;saveReminderSettings(s);applyReminderUI();scheduleReminder()}
+function saveSettings(){var s={enabled:document.getElementById('reminderToggle').classList.contains('on'),time:document.getElementById('reminderTime').value};saveReminderSettings(s);scheduleReminder();closeSettings();showToast('设置已保存 ✅')}
+function scheduleReminder(){
+  if(reminderTimer){clearTimeout(reminderTimer);reminderTimer=null}
+  var s=loadReminderSettings();if(!s.enabled)return;
+  var parts=s.time.split(':'),h=parseInt(parts[0]),m=parseInt(parts[1]),now=new Date(),target=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0);
+  if(target.getTime()<=now.getTime())target.setDate(target.getDate()+1);
+  var delay=target.getTime()-now.getTime();
+  reminderTimer=setTimeout(function(){sendNotification('🔔 该训练啦！','今天的体态矫正训练在等你哦 💕\n打开APP开始今天的训练吧～');scheduleReminder()},delay);
+  requestNotificationPermission();
+}
+
+// Settings Panel
+function openSettings(){document.getElementById('settingsOverlay').classList.add('show');applyReminderUI()}
+function closeSettings(){document.getElementById('settingsOverlay').classList.remove('show')}
+document.getElementById('settingsOverlay').addEventListener('click',function(e){if(e.target===this)closeSettings()});
+
+// ============================================================
+// Install Banner
+// ============================================================
+var deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  checkInstallBanner();
+});
+window.addEventListener('appinstalled', function() {
+  deferredPrompt = null;
+  document.getElementById('installBanner').classList.add('hidden');
+  showToast('安装成功！🎉');
+});
+function checkInstallBanner(){
+  var banner = document.getElementById('installBanner');
+  if(window.matchMedia('(display-mode: standalone)').matches || navigator.standalone){ banner.classList.add('hidden'); return; }
+  if(localStorage.getItem('posture_install_dismissed')){ banner.classList.add('hidden'); return; }
+  if(deferredPrompt){
+    banner.classList.remove('hidden','android');
+    document.getElementById('installText').textContent = '👆 点击这里一键安装到桌面！';
+    banner.onclick = function(e){
+      if(e.target.id === 'installClose') return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(result) {
+        if(result.outcome === 'accepted') { banner.classList.add('hidden'); }
+        deferredPrompt = null;
+      });
+    };
+    return;
+  }
+  var ua = navigator.userAgent, isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if(isIOS){ banner.classList.remove('hidden','android'); document.getElementById('installText').textContent = '📱 点分享按钮 → 添加到主屏幕'; }
+  else { banner.classList.remove('hidden'); document.getElementById('installText').textContent = '📱 点菜单 → 添加到主屏幕'; }
+}
+document.getElementById('installBanner').addEventListener('click',function(e){if(e.target.id==='installClose'){e.stopPropagation();this.classList.add('hidden');localStorage.setItem('posture_install_dismissed','1')}});
+document.getElementById('installClose').addEventListener('click',function(e){e.stopPropagation();document.getElementById('installBanner').classList.add('hidden');localStorage.setItem('posture_install_dismissed','1')});
+
+// ============================================================
+// Navigation
+// ============================================================
+function switchPage(page){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});
+  if(page==='train'){document.getElementById('pageTrain').classList.add('active');document.querySelector('[data-page="train"]').classList.add('active');showTrainPre()}
+  else if(page==='lib'){document.getElementById('pageLib').classList.add('active');document.querySelector('[data-page="lib"]').classList.add('active');document.getElementById('headerSub').textContent='学习正确动作 📖';updateMascot();renderLibCatTabs();renderLib()}
+  else if(page==='rec'){document.getElementById('pageRec').classList.add('active');document.querySelector('[data-page="rec"]').classList.add('active');document.getElementById('headerSub').textContent='坚持就是最美的魔法 ✨';updateMascot();renderRecords()}
+}
+document.querySelector('.nav').addEventListener('click',function(e){var btn=e.target.closest('.nav-btn');if(!btn)return;switchPage(btn.dataset.page)});
+document.getElementById('startBtn').addEventListener('click',startTraining);
+document.getElementById('setBtn').addEventListener('click',completeSet);
+document.getElementById('skipBtn').addEventListener('click',function(){if(!trainState||trainState.phase==='done')return;stopTimer();trainState.restSec=0;var ex=trainState.exercises[trainState.exIndex];trainState.setIndex=ex.sets-1;completeSet()});
+document.getElementById('doneBtn').addEventListener('click',function(){stopTimer();showTrainPre()});
+document.getElementById('catTabs').addEventListener('click',function(e){var btn=e.target.closest('.cat-btn');if(!btn)return;libCat=btn.dataset.cat;renderLibCatTabs();renderLib()});
+document.getElementById('settingsBtn').addEventListener('click',openSettings);
+
+// ============================================================
+// Toast
+// ============================================================
+var toastTimer;
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show')},1800)}
+
+// ============================================================
+// PWA - manifest.json linked in <head>, no inline blob needed
+// Service Worker registration for offline support + install prompt
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(function(reg){
+    navigator.serviceWorker.addEventListener('message', function(event){
+      if(event.data && event.data.type === 'UPDATE_READY'){
+        document.getElementById('updateBanner').classList.remove('hidden');
+      }
+    });
+    if(reg.waiting){
+      document.getElementById('updateBanner').classList.remove('hidden');
+    }
+    reg.addEventListener('updatefound', function(){
+      var newWorker = reg.installing;
+      if(newWorker){
+        newWorker.addEventListener('statechange', function(){
+          if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
+            document.getElementById('updateBanner').classList.remove('hidden');
+          }
+        });
+      }
+    });
+  }).catch(function(err){ console.log('SW failed:', err) });
+}
+document.getElementById('updateBtn').addEventListener('click', function(){
+  navigator.serviceWorker.ready.then(function(reg){
+    if(reg.waiting){ reg.waiting.postMessage({ type: 'SKIP_WAITING' }); }
+  }).then(function(){ location.reload(); });
+});
+
+// Init
+document.addEventListener('DOMContentLoaded',function(){
+  showTrainPre();checkInstallBanner();applyReminderUI();scheduleReminder();requestNotificationPermission();
+  var n=new Date();setTimeout(function(){if(document.getElementById('pageTrain').classList.contains('active'))showTrainPre()},new Date(n.getFullYear(),n.getMonth(),n.getDate()+1).getTime()-n.getTime()+1000);
+});
+</script>
+</body>
+</html>

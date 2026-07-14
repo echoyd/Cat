@@ -1,0 +1,18 @@
+{
+  "name": "体态矫正训练",
+  "short_name": "体态矫正",
+  "description": "体态矫正训练计划 - 改善脖子前倾、圆肩、骨盆不对称",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#FFF0F3",
+  "background_color": "#FFF5F7",
+  "lang": "zh-CN",
+  "icons": [{
+    "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23FFB3C1'/%3E%3Ccircle cx='256' cy='180' r='80' fill='%23FDDDE6'/%3E%3Ccircle cx='230' cy='165' r='10' fill='%23E8738A'/%3E%3Ccircle cx='282' cy='165' r='10' fill='%23E8738A'/%3E%3Cpath d='M220 210 Q256 230 292 210' fill='none' stroke='%23E8738A' stroke-width='6' stroke-linecap='round'/%3E%3Ctext x='256' y='380' font-size='140' text-anchor='middle' fill='%23E8738A'%3E🧘%3C/text%3E%3C/svg%3E",
+    "sizes": "512x512",
+    "type": "image/svg+xml",
+    "purpose": "any maskable"
+  }]
+}
