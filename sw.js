@@ -1,5 +1,5 @@
-// Service Worker for PWA - v2 with auto-update
-var CACHE_NAME = 'posture-training-v2';
+// Service Worker for PWA - v3 with animated SVGs
+var CACHE_NAME = 'posture-training-v3';
 var urlsToCache = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', function(event) {
